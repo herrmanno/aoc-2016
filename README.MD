@@ -4,7 +4,7 @@
 
 - [x] Javascript ▶︎ Day 01
 - [x] Python ▶︎ Day 02
-- [ ] C
+- [x] C ▶︎ Day 03
 - [ ] C++
 - [ ] C#
 - [ ] Ada
