@@ -2,10 +2,10 @@
 
 ## Languages
 
-- [x] Javascript ▶︎ Day 01
-- [x] Python ▶︎ Day 02
-- [x] C ▶︎ Day 03
-- [ ] C++
+- [x] Javascript    --> Day 01
+- [x] Python        --> Day 02
+- [x] C             --> Day 03
+- [x] C++           --> Day 04
 - [ ] C#
 - [ ] Ada
 - [ ] Pascal
@@ -21,9 +21,11 @@
 - [ ] Lua
 - [ ] Haskel / oCaml
 - [ ] SmallTalk
-- [ ] Lisp
+- [ ] Lisp / Clojure
 - [ ] Fortran
 - [ ] PL/SQL
 - [ ] D
 - [ ] Erlang
 - [ ] Perl
+- [ ] Objective-C
+- [ ] Swift
