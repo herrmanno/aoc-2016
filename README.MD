@@ -6,13 +6,13 @@
 - [x] Python        --> Day 02
 - [x] C             --> Day 03
 - [x] C++           --> Day 04
+- [x] Go            --> Day 05
 - [ ] C#
 - [ ] Ada
 - [ ] Pascal
 - [ ] Java
 - [ ] Scala
 - [ ] Dart
-- [ ] Go
 - [ ] Rust
 - [ ] Julia
 - [ ] Ruby
