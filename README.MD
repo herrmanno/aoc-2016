@@ -7,6 +7,7 @@
 - [x] C             --> Day 03
 - [x] C++           --> Day 04
 - [x] Go            --> Day 05
+- [x] SmallTalk     --> Day 06
 - [ ] C#
 - [ ] Ada
 - [ ] Pascal
@@ -20,7 +21,6 @@
 - [ ] Bash
 - [ ] Lua
 - [ ] Haskel / oCaml
-- [ ] SmallTalk
 - [ ] Lisp / Clojure
 - [ ] Fortran
 - [ ] PL/SQL
