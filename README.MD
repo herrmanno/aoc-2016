@@ -8,6 +8,7 @@
 - [x] C++           --> Day 04
 - [x] Go            --> Day 05
 - [x] SmallTalk     --> Day 06
+- [x] Perl          --> Day 07
 - [ ] C#
 - [ ] Ada
 - [ ] Pascal
@@ -26,6 +27,5 @@
 - [ ] PL/SQL
 - [ ] D
 - [ ] Erlang
-- [ ] Perl
 - [ ] Objective-C
 - [ ] Swift
