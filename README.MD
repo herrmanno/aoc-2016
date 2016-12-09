@@ -10,6 +10,7 @@
 - [x] SmallTalk     --> Day 06
 - [x] Perl          --> Day 07
 - [x] Dart          --> Day 08
+- [x] Groovy        --> Day 09
 - [ ] C#
 - [ ] Ada
 - [ ] Pascal
