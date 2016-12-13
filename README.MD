@@ -11,14 +11,15 @@
 - [x] Perl          --> Day 07
 - [x] Dart          --> Day 08
 - [x] Groovy        --> Day 09
+- [x] Ruby          --> Day 10
+
+- [x] Rust          --> Day 12
 - [ ] C#
 - [ ] Ada
 - [ ] Pascal
 - [ ] Java
 - [ ] Scala
-- [ ] Rust
 - [ ] Julia
-- [ ] Ruby
 - [ ] PHP
 - [ ] Bash
 - [ ] Lua
