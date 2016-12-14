@@ -10,7 +10,7 @@ val N = 64
 val md = MessageDigest.getInstance("md5")
 fun md5(arg: Int): String {
     val bytes = md.digest((input + arg).toByteArray())
-    return String.format("%032X", BigInteger(1, bytes))
+    return String.format("%032X", BigInteger(1, bytes)).decapitalize()
 }
 
 fun hasTriplet(str: String): Char? {
@@ -48,10 +48,10 @@ fun hasTuple(str: String, n: Int): Char? {
 fun main(args: Array<String>) {
 
     var pendingKeys: MutableList<PendingKey> = mutableListOf()
-    var keys = 0
+    var keys: MutableList<Int> = mutableListOf()
 
     var i = 0
-    while(keys < 64) {
+    while(keys.size < 64) {
         val hex = md5(i)
         val tripletChar = hasTriplet(hex)
         if(tripletChar != null)
@@ -59,9 +59,7 @@ fun main(args: Array<String>) {
 
         val quintupleChar = hasQuintuple(hex)
         if(quintupleChar != null) {
-            val fulfilledSize = pendingKeys.filter({ it.char == quintupleChar }).size
-            keys += fulfilledSize
-
+            keys.addAll( pendingKeys.filter({ it.char == quintupleChar }).map({it.index}) )
             pendingKeys = pendingKeys.filter { it.char != quintupleChar} as MutableList<PendingKey>
         }
 
@@ -71,5 +69,23 @@ fun main(args: Array<String>) {
         i++;
     }
 
-    println(i)
+    //prune remaning pendingKeys
+    var j = 0
+    while(j < 1000) {
+        val hex = md5(i)
+
+        val quintupleChar = hasQuintuple(hex)
+        if(quintupleChar != null) {
+            keys.addAll( pendingKeys.filter({ it.char == quintupleChar }).map({it.index}) )
+            pendingKeys = pendingKeys.filter { it.char != quintupleChar} as MutableList<PendingKey>
+        }
+
+        
+        pendingKeys = pendingKeys.filter { it.index + 1000 < i} as MutableList<PendingKey>
+
+        i++
+        j++
+    }
+
+    println(keys.sorted().get(63))
 }
