@@ -11,9 +11,22 @@ val N = 64
 
 
 val md = MessageDigest.getInstance("md5")
+
 fun md5(arg: Int): String {
-    val bytes = md.digest((input + arg).toByteArray())
-    return String.format("%032X", BigInteger(1, bytes)).decapitalize()
+    var i = 0
+    var h = input + arg
+    
+    while(i < 2017) {
+        h = _md5(h)
+        i++
+    }
+
+    return h
+} 
+
+fun _md5(arg: String): String {
+    val bytes = md.digest(arg.toByteArray())
+    return String.format("%032X", BigInteger(1, bytes)).toLowerCase()
 }
 
 fun hasTriplet(str: String): Char? {
@@ -51,7 +64,7 @@ fun hasTuple(str: String, n: Int): List<Char> {
 
 fun main1() {
 
-    val MAX = 30000;
+    val MAX = 40000;
 
     val triplets: MutableList<Pair<Int,Char>> = mutableListOf()
     val quintuples: MutableList<Pair<Int,Char>> = mutableListOf()
@@ -74,9 +87,13 @@ fun main1() {
                 q.first > t.first && q.first <= t.first + 1000 && q.second == t.second
             } != null
         }
-        .get(63)
+        .sortedWith(compareBy({it.first}))
+        .take(64)
+        .forEachIndexed { idx, it ->
+            println("$idx:\t$it")
+        }
 
-    println(t64)
+    // println(t64)
 }
 
 fun main(args: Array<String>) {
