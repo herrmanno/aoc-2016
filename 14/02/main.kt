@@ -11,74 +11,52 @@ val N = 64
 
 
 val md = MessageDigest.getInstance("md5")
-
 fun md5(arg: Int): String {
-    var i = 0
-    var h = input + arg
-    
-    while(i < 2017) {
-        h = _md5(h)
-        i++
-    }
-
-    return h
-} 
+    return _md5(input + arg)
+}
 
 fun _md5(arg: String): String {
-    val bytes = md.digest(arg.toByteArray())
-    return String.format("%032X", BigInteger(1, bytes)).toLowerCase()
-}
-
-fun hasTriplet(str: String): Char? {
-   return hasTuple(str, 3).firstOrNull()
-}
-
-fun hasQuintuple(str: String): Char? {
-   return hasTuple(str, 5).firstOrNull()
-}
-
-fun hasTuple(str: String, n: Int): List<Char> {
-    var i = 0
-    var cs: MutableList<Char> = mutableListOf()
-    while(i < str.length - n) {
-        var c = str.get(i)
-        var found = true
-        var j = 0
-        while(j < n) {
-            if(str.get(i + j) != c) {
-                found = false
-                break
-            }
-
-            j++
-        }
-        if(found) {
-            cs.add(c)
-        }
-
-        i++
+    var hash = arg
+    for(i in 0..2016) {
+        val bytes = md.digest(hash.toByteArray())
+        hash =  String.format("%032X", BigInteger(1, bytes)).toLowerCase()
     }
+    return hash
+}
 
-    return cs
+val tripletRegex = "(.)\\1{2}".toRegex()
+fun hasTriplet(str: String): Char? {
+    val m = tripletRegex.find(str)
+    if(m != null)
+        return m.value[0]
+    else
+        return null
+}
+
+val quintupleRegex = "(.)\\1{4}".toRegex()
+fun hasQuintuple(str: String): Char? {
+    val m = quintupleRegex.find(str)
+    if(m != null)
+        return m.value[0]
+    else
+        return null
 }
 
 fun main1() {
 
-    val MAX = 40000;
+    val MAX = 35000;
 
     val triplets: MutableList<Pair<Int,Char>> = mutableListOf()
     val quintuples: MutableList<Pair<Int,Char>> = mutableListOf()
 
     for(i in 0..MAX) {
         val h = md5(i)
-        if(hasTriplet(h) != null)
+        if(hasTriplet(h) != null) {
             triplets.add(Pair(i, hasTriplet(h) as Char))
-    }
-
-    for(i in 0..MAX+1000) {
-        val h = md5(i)
-        if(hasQuintuple(h) != null)
-            quintuples.add(Pair(i, hasQuintuple(h) as Char))
+              
+            if(hasQuintuple(h) != null)
+                quintuples.add(Pair(i, hasQuintuple(h) as Char))
+        }
     }
 
     val t64 = triplets
@@ -87,13 +65,9 @@ fun main1() {
                 q.first > t.first && q.first <= t.first + 1000 && q.second == t.second
             } != null
         }
-        .sortedWith(compareBy({it.first}))
         .take(64)
-        .forEachIndexed { idx, it ->
-            println("$idx:\t$it")
-        }
+        .forEachIndexed {idx, hash -> println("$idx:\t\t$hash")}
 
-    // println(t64)
 }
 
 fun main(args: Array<String>) {

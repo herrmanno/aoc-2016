@@ -1,0 +1,3 @@
+interface RadioItem {
+    Isotope getType();
+}
