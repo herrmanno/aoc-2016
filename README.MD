@@ -14,13 +14,14 @@
 - [x] Ruby          --> Day 10
 
 - [x] Rust          --> Day 12
+- [x] PHP           --> Day 13
+- [x] Kotlin        --> Day 14
 - [ ] C#
 - [ ] Ada
 - [ ] Pascal
 - [ ] Java
 - [ ] Scala
 - [ ] Julia
-- [ ] PHP
 - [ ] Bash
 - [ ] Lua
 - [ ] Haskel / oCaml
