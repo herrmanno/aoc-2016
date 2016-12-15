@@ -16,11 +16,11 @@
 - [x] Rust          --> Day 12
 - [x] PHP           --> Day 13
 - [x] Kotlin        --> Day 14
+- [x] Scala         --> Day 15
 - [ ] C#
 - [ ] Ada
 - [ ] Pascal
 - [ ] Java
-- [ ] Scala
 - [ ] Julia
 - [ ] Bash
 - [ ] Lua
