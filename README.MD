@@ -12,7 +12,7 @@
 - [x] Dart          --> Day 08
 - [x] Groovy        --> Day 09
 - [x] Ruby          --> Day 10
-
+- [x] D             --> Day 11
 - [x] Rust          --> Day 12
 - [x] PHP           --> Day 13
 - [x] Kotlin        --> Day 14
@@ -28,7 +28,6 @@
 - [ ] Lisp / Clojure
 - [ ] Fortran
 - [ ] PL/SQL
-- [ ] D
 - [ ] Erlang
 - [ ] Objective-C
 - [ ] Swift
