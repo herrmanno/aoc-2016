@@ -1,14 +1,18 @@
 import std.stdio;
 import std.array;
-import std.container : DList;
+import std.string;
+import std.algorithm: canFind;
+import std.container.binaryheap;
 import std.container.rbtree;
 import std.algorithm.sorting;
+
 
 alias ushort Floor; //1111111111 10 bits - RTGS first, chips second
 alias ulong Floors; //4 floors concatenated - last 10 bits are floor 0
 alias ushort Elevator;
 alias ubyte Level;
 alias uint Step;
+
 
 const ushort ALL_RTG = 0b1111100000;
 const ushort ALL_CHIP = 0b0000011111;
@@ -17,11 +21,38 @@ struct State {
     Floors floors;
     Level level;
     Step step;
+
+    Floor getFloor(Level level) {
+        return (floors >> level * 10) & (ALL_RTG | ALL_CHIP);
+    }
+
+    bool equals(State other) {
+        return this.floors == other.floors;
+    }
+
+    debug:
+    string toString() {
+        return join([
+            "State:----",
+            b(this.getFloor(3)),
+            b(this.getFloor(2)),
+            b(this.getFloor(1)),
+            b(this.getFloor(0)),
+        ], "\n");
+    }
+
 }
 
-Floor getFloor(State state, Level level) {
-    return (state.floors >> level * 10) & (ALL_RTG | ALL_CHIP);
+debug:
+string b(ulong n) {
+    string s = "";
+    while(n) {        
+        s = ((n & 0b1) == 1 ? "1" : "0") ~ s;
+        n >>= 1;
+    }
+    return rightJustify(s, 10, '0');
 }
+
 
 State[] getNextStates(State state) {
     Floor currFloor = (state.floors >> state.level * 10) & (ALL_RTG | ALL_CHIP);
@@ -42,55 +73,99 @@ State[] getNextStates(State state) {
     //------- take two items
 
     for(int i = 0; i < 10; i++) {
-        for(int j = i + 1; i < 10; i++) {
+        for(int j = i + 1; j < 10; j++) {
+            
             Floor take = currFloor & (1 << i | 1 << j);
        
             if(take == 0)
                 continue;
-            else
+            else if(!combinations.canFind(take))
                 combinations ~= take;
         }
 
     }
 
-
     foreach(comb; combinations) {
-        for(Level nextLevel = 0; nextLevel < 4; nextLevel++) {
-            if(nextLevel == state.level) {
-                continue;
+        if(!isElevatorValid(comb))
+            continue;
+
+        // cycle elevator up and down.
+        //
+        // as is has to stop on every floor and my fry chips while standing still
+        // break the loop if an state is invalid
+
+        if(state.level < 3)
+            for(Level nextLevel = cast(Level)(state.level + 1); nextLevel < 4; nextLevel++) {
+                Floors floor3 = nextLevel == 3 ? (state.getFloor(3) | comb) : state.level == 3 ? (state.getFloor(3) & ~comb) : state.getFloor(3);
+                Floors floor2 = nextLevel == 2 ? (state.getFloor(2) | comb) : state.level == 2 ? (state.getFloor(2) & ~comb) : state.getFloor(2);
+                Floors floor1 = nextLevel == 1 ? (state.getFloor(1) | comb) : state.level == 1 ? (state.getFloor(1) & ~comb) : state.getFloor(1);
+                Floors floor0 = nextLevel == 0 ? (state.getFloor(0) | comb) : state.level == 0 ? (state.getFloor(0) & ~comb) : state.getFloor(0);
+
+                Floors nextFloors = (floor3 << 30) | (floor2 << 20) | (floor1 << 10) | (floor0);
+
+                State nextState = State(
+                    nextFloors,
+                    nextLevel,
+                    state.step + 1
+                );
+
+                if(elCount(nextState) != elCount(state)) {
+                    writeln(state.toString);
+                    writeln(nextState.toString);
+                    throw new Exception("New state has more elements than old state!");
+                }
+
+                if(stateIsValid(nextState)) {
+                    nextStates ~= nextState;
+                } else {
+                    break;
+                }
+
+                break;
             }
 
-            Floor floor3 = nextLevel == 3 ? getFloor(state, 3) | comb : state.level == 3 ? getFloor(state, 3) & ~comb : getFloor(state, 3);
-            Floor floor2 = nextLevel == 2 ? getFloor(state, 2) | comb : state.level == 2 ? getFloor(state, 2) & ~comb : getFloor(state, 2);
-            Floor floor1 = nextLevel == 1 ? getFloor(state, 1) | comb : state.level == 1 ? getFloor(state, 1) & ~comb : getFloor(state, 1);
-            Floor floor0 = nextLevel == 0 ? getFloor(state, 0) | comb : state.level == 0 ? getFloor(state, 0) & ~comb : getFloor(state, 0);
+        if(state.level > 0)
+            for(Level nextLevel = cast(Level)(state.level - 1); nextLevel > -1; nextLevel--) {
+                Floors floor3 = nextLevel == 3 ? (state.getFloor(3) | comb) : state.level == 3 ? (state.getFloor(3) & ~comb) : state.getFloor(3);
+                Floors floor2 = nextLevel == 2 ? (state.getFloor(2) | comb) : state.level == 2 ? (state.getFloor(2) & ~comb) : state.getFloor(2);
+                Floors floor1 = nextLevel == 1 ? (state.getFloor(1) | comb) : state.level == 1 ? (state.getFloor(1) & ~comb) : state.getFloor(1);
+                Floors floor0 = nextLevel == 0 ? (state.getFloor(0) | comb) : state.level == 0 ? (state.getFloor(0) & ~comb) : state.getFloor(0);
 
-            Floors nextFloors = floor3 << 30 | floor2 << 20 | floor1 << 10 | floor0;
+                Floors nextFloors = (floor3 << 30) | (floor2 << 20) | (floor1 << 10) | (floor0);
 
-            State nextState = State(
-                nextFloors,
-                nextLevel,
-                state.step + 1
-            );
+                State nextState = State(
+                    nextFloors,
+                    nextLevel,
+                    state.step + 1
+                );
 
-            if(stateIsValid(nextState))
-                nextStates ~= nextState;
-        }
+                if(elCount(nextState) != elCount(state)) {
+                    writeln(state.toString);
+                    writeln(nextState.toString);
+                    throw new Exception("New state has more elements than old state!");
+                }
+
+                if(stateIsValid(nextState)) {
+                    nextStates ~= nextState;
+                } else {
+                    break;
+                }
+
+                break;
+            }
     }
 
-    nextStates = array(nextStates.sort!("a.floors > b.floors"));
-
-    // return sort!((a, b) => a.floors > b.floors)(nextStates);
-    return nextStates;
+    auto states =  array(nextStates.sort!("a.floors > b.floors"));
+    return states;
 }
 
 bool stateIsValid(State state) {
-    for(int i = 0; i < 3; i ++) {                                           // iterate over all floors
-        Floor floor = (state.floors >> (i * 10)) & (ALL_RTG | ALL_CHIP);    // shift floor to inspect to the right end of the long
+    for(Level level = 0; level < 3; level++) {                                           // iterate over all floors
+        Floor floor = state.getFloor(level);    // shift floor to inspect to the right end of the long
         if((floor & ALL_RTG) != 0) {                                        // floors has RTGs -> every chip needs its corresponding RTG on this floor
-            for(int j = 0; i < 5; j++) {                                    // iterate over all isotopes
-                if((floor >> j) & 0b1) {                                    // chip detected
-                    if( !(floor >> (j+5) & 0b1) ) {                         // corresponding RTG not(!) found
+            for(int isotope = 0; isotope < 5; isotope++) {                                    // iterate over all isotopes
+                if( ((floor >> isotope) & 1) == 1) {                                    // chip detected
+                    if( ((floor >> (isotope + 5)) & 1) == 0) {                         // corresponding RTG not(!) found
                         return false;
                     }
                 }
@@ -99,6 +174,16 @@ bool stateIsValid(State state) {
     }
 
     return true;
+}
+
+ubyte elCount(State state) {
+    ubyte ones = 0;
+    for(int i = 0; i < 40; i++) {
+        if( (state.floors >> i) & 1)
+            ones++;
+    }
+
+    return ones;
 }
 
 bool isElevatorValid(Elevator elevator) {
@@ -117,39 +202,43 @@ bool isElevatorValid(Elevator elevator) {
 
 int main() {
 
-    State finalState = State(0b1111111111 << 30, 0, 0);
-    State rootState = State(0b0000000000_0000000100_1110011000_0001100011, 0, 0);
+    State finalState = State(0b1111111111000000000000000000000000000000, 0, 0);
+    State rootState = State(0b0000000000000000010011100110000001100011, 0, 0);
 
-    auto queue = DList!State();
+    State[] qArr;
+    auto queue = heapify!"a.floors < b.floors"(qArr);
     auto visited = redBlackTree!Floors();
 
 
-    queue.insertBack(rootState);
-    while(!queue.empty) {
+    ulong count = 0;
+    queue.insert(rootState);
+    do {
         State state = queue.front;
         queue.removeFront();
 
-        if(state.floors == finalState.floors) {
-            writeln(state.step);
+        if(finalState.equals(state)) {
+            writefln("Found after %d steps", state.step);
             return 0;
         }
 
-        if(!(state.floors in visited)) {
+        if(state.floors in visited) {
+            continue;
+        }
+        else {
             visited.insert(state.floors);
-
-            auto nextStates = getNextStates(state);
-            for (int i = 0; i < nextStates.length; i++) {
-                if(!stateIsValid(nextStates[i]))
-                    continue;
-                else
-                    queue.insertBack(state);
-            }
-
         }
 
-    }
 
-    writeln("No result found");
+        auto nextStates = getNextStates(state);
+        foreach(nextState; nextStates) {
+            queue.insert(nextState);
+        }
+
+        count++;
+
+    } while(!queue.empty());
+
+    writefln("No result found. Inspected %d states", count);
     return -1;
 
 }
