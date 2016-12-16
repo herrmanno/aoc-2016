@@ -8,63 +8,91 @@ const
     MAX_LENGTH = 35651584;
 
 var
+    reverse: boolean;
     data: ansistring;
+    chunk: ansistring;
     checksum: ansistring;
+    readData: longint;
+    tmp: ansistring;
+    chunksize: longint;
 
-function generateData(const input: ansistring; const maxLength: integer): ansistring;
-var    
-    a: ansistring;
-    b: ansistring;
-    data: ansistring;
-begin
-    data:=input;
-
-    while(Length(data) <= maxLength) do
-    begin
-        a:=copy(data, 1, Length(data));
-        b:=copy(data, 1, Length(data));
-        b:=ReverseString(b);
-        b:=StringReplace(b, '0', 'N', [rfReplaceAll]);
-        b:=StringReplace(b, '1', 'E', [rfReplaceAll]);
-        b:=StringReplace(b, 'N', '1', [rfReplaceAll]);
-        b:=StringReplace(b, 'E', '0', [rfReplaceAll]);
-        data:=Concat(a, '0', b);
-    end;
-        
-    data:=copy(data, 1, maxLength);
-    generateData:=data;
-end;
-
-
-function generateChecksum(const data: ansistring): ansistring;
+function getChunksize(const input: integer): integer;
 var
     i: integer;
-    checksum: ansistring;
+    size: integer;
 begin
-    checksum:='';
+    size:=1;
+    i:=input;
 
-    i:=1;
-    while i < length(data) do
+    while((i and 1) = 0) do
     begin
-        if data[i] <> data[i+1] then
-            checksum:=concat(checksum, '0')
-        else
-            checksum:=concat(checksum, '1');
-
-        i:=i+2;
+        i:=Round(i / 2);
+        size:=size + 1;
     end;
 
-    if(length(checksum) and 1 = 0) then // even length
-        generateChecksum:=generateChecksum(checksum)
+    getChunksize:=Round(input / size);
+end;
+
+function generateData(const input: ansistring): ansistring;
+var    
+    reversed: ansistring;
+begin
+    reversed:=copy(input, 1, length(input));
+    reversed:=ReverseString(reversed);
+
+    if(reverse) then
+        generateData:=Concat(input, '0', reversed)
     else
-        generateChecksum:=checksum;
+        generateData:=Concat(reversed, '0', input);
+    
+    reverse:=reverse xor true;
 end;
 
 
+function generateChecksum(const chunk: ansistring): ansistring;
+var
+    count: longint;
+    i: longint;
 begin
-    data:=generateData(START_INPUT, MAX_LENGTH);
-    writeln(length(data));
-    checksum:=generateChecksum(data);
+    count:=0;
+    i:=0;
+    while(i < length(data)) do
+    begin
+        if data[i] = '1' then
+            count:=count+1;
+
+        i:=i+1;
+    end;
+
+    if(count*2 = length(data)) then
+        generateChecksum:='1'
+    else
+        generateChecksum:='0';
+end;
+
+
+begin    
+    reverse:= false;
+    readData:=0;
+    chunksize:=getChunksize(MAX_LENGTH);
+    data:='';
+    checksum:='';
+
+    while(readData < MAX_LENGTH) do
+    begin
+        while(length(data) < chunksize) do
+        begin
+            tmp:=generateData(START_INPUT);
+            readData:=readData+length(tmp);
+            data:=concat(data, tmp);
+        end;
+
+        chunk:=copy(data, 1, chunksize);
+        data:=copy(data, getChunksize(MAX_LENGTH), length(data));
+        
+        checksum:=concat(checksum, generateChecksum(chunk));
+        
+    end;
 
     write(checksum);
     write('\n');
