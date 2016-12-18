@@ -5,47 +5,76 @@ uses strutils, sysutils;
 
 const
     START_INPUT = '10111100110001111';
+    // MAX_LENGTH = 272;
     MAX_LENGTH = 35651584;
 
 var
-    reverse: boolean;
+    // reverse: boolean;
     data: ansistring;
     chunk: ansistring;
     checksum: ansistring;
     readData: longint;
     tmp: ansistring;
     chunksize: longint;
+    joiners: ansistring;
+    joinerIndex: longint;
+
+
+function flipBits(const str: string): ansistring;
+var    
+    s: ansistring;
+begin
+    s:=copy(str, 1, length(str));
+    s:=StringReplace(s, '0', 'N', [rfReplaceAll]);
+    s:=StringReplace(s, '1', 'E', [rfReplaceAll]);
+    s:=StringReplace(s, 'N', '1', [rfReplaceAll]);
+    s:=StringReplace(s, 'E', '0', [rfReplaceAll]);
+        
+    flipBits:=s;
+end;
+
+function generateJoiners(): integer;
+var
+    size: integer;
+begin
+    size:=Round(MAX_LENGTH / length(START_INPUT)) + 1;
+    joiners:='0';
+    joinerIndex:=1;
+
+    while(length(joiners) < size) do
+    begin
+        joiners:=concat(joiners, '0', flipBits(ReverseString(joiners)));
+    end;    
+        
+    generateJoiners:= 0;
+end;
 
 function getChunksize(const input: integer): integer;
 var
     i: integer;
-    size: integer;
 begin
-    size:=1;
     i:=input;
 
     while((i and 1) = 0) do
     begin
         i:=Round(i / 2);
-        size:=size + 1;
     end;
 
-    getChunksize:=Round(input / size);
+    getChunksize:=Round(input / i);
 end;
 
-function generateData(const input: ansistring): ansistring;
+function generateData(): ansistring;
 var    
     reversed: ansistring;
+    copied: ansistring;
+    flipped: ansistring;
 begin
-    reversed:=copy(input, 1, length(input));
-    reversed:=ReverseString(reversed);
-
-    if(reverse) then
-        generateData:=Concat(input, '0', reversed)
-    else
-        generateData:=Concat(reversed, '0', input);
+    copied:=copy(START_INPUT, 1, length(START_INPUT));
+    reversed:=ReverseString(copied);
+    flipped:=flipBits(reversed);
     
-    reverse:=reverse xor true;
+    generateData:=concat(START_INPUT, joiners[joinerIndex], flipped);
+    joinerIndex:=joinerIndex+1;
 end;
 
 
@@ -56,15 +85,26 @@ var
 begin
     count:=0;
     i:=0;
-    while(i < length(data)) do
+    while(i <= length(chunk)) do
     begin
-        if data[i] = '1' then
+        if chunk[i] = '1' then
             count:=count+1;
 
         i:=i+1;
     end;
 
-    if(count*2 = length(data)) then
+    // write(chunk);
+    // writeln('Generating checksum for chunk:');
+    // writeln(chunk);
+    // writeln('Count of "1"s is: ', count);
+    // write('Count of "1"s is: ');
+    // if((count and 1 ) = 0) then
+    //     writeln('even')
+    // else
+    //     writeln('odd');
+
+
+    if((count and 1) = 0) then
         generateChecksum:='1'
     else
         generateChecksum:='0';
@@ -72,28 +112,43 @@ end;
 
 
 begin    
-    reverse:= false;
     readData:=0;
     chunksize:=getChunksize(MAX_LENGTH);
     data:='';
     checksum:='';
 
-    while(readData < MAX_LENGTH) do
+    generateJoiners();
+
+    // writeln(chunksize);
+    // exit();
+
+    while(length(checksum) < Round(MAX_LENGTH / chunksize)) do
     begin
         while(length(data) < chunksize) do
         begin
-            tmp:=generateData(START_INPUT);
+            tmp:=generateData();
             readData:=readData+length(tmp);
             data:=concat(data, tmp);
         end;
 
-        chunk:=copy(data, 1, chunksize);
-        data:=copy(data, getChunksize(MAX_LENGTH), length(data));
+        // writeln('Data before:');
+        // writeln(data);
+
+        chunk:=copy(data, 1, chunksize);        
+        data:=copy(data, chunksize+1, length(data));
+
+        // writeln('Chunk:');
+        // writeln(chunk);
+
+        // writeln('Data after:');
+        // writeln(data);
         
         checksum:=concat(checksum, generateChecksum(chunk));
         
     end;
 
-    write(checksum);
-    write('\n');
+    writeln();
+    writeln();
+    writeln(checksum);
+    
 end.
