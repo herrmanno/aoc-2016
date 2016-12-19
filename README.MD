@@ -17,17 +17,21 @@
 - [x] PHP           --> Day 13
 - [x] Kotlin        --> Day 14
 - [x] Scala         --> Day 15
+- [ ] Pascal        --> Day 16/01 
+- [x] Java          --> Day 17
+- [x] Lua           --> Day 18
 - [ ] C#
 - [ ] Ada
-- [ ] Pascal
-- [ ] Java
 - [ ] Julia
 - [ ] Bash
-- [ ] Lua
 - [ ] Haskel / oCaml
 - [ ] Lisp / Clojure
 - [ ] Fortran
 - [ ] PL/SQL
 - [ ] Erlang
+- [ ] Elixir
 - [ ] Objective-C
 - [ ] Swift
+- [ ] Haxe
+- [ ] Hack
+- [ ] Crystal
