@@ -103,13 +103,15 @@ class Main {
 
         heap.offer("");
 
+        String longestPath = "";
+
         while(heap.size() > 0) {
 
             String path = heap.poll();
 
             if(toPoint(path).equals(FINAL_POINT)) {
-                System.out.println("The shortest path is: " + path);
-                System.exit(0);
+                longestPath = path.length() > longestPath.length() ? path : longestPath;
+                continue;
             }
 
             for(String nextPath : getNextPaths(path)) {
@@ -117,8 +119,8 @@ class Main {
             }
         }
 
-        System.out.println("No path found");
-        System.exit(1);
+        System.out.println(String.format("Length of longest path is: %d", longestPath.length()));
+        System.exit(0);
     }
 
     public static void main(String[] args) throws Exception {
