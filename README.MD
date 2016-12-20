@@ -20,11 +20,11 @@
 - [ ] Pascal        --> Day 16/01 
 - [x] Java          --> Day 17
 - [x] Lua           --> Day 18
+- [x] Haskel        --> Day 19
+- [x] Bash          --> Day 20
 - [ ] C#
 - [ ] Ada
 - [ ] Julia
-- [ ] Bash
-- [ ] Haskel / oCaml
 - [ ] Lisp / Clojure
 - [ ] Fortran
 - [ ] PL/SQL
