@@ -22,6 +22,7 @@
 - [x] Lua           --> Day 18
 - [x] Haskel        --> Day 19
 - [x] Bash          --> Day 20
+- [x] Pony          --> Day 21
 - [ ] C#
 - [ ] Ada
 - [ ] Julia
