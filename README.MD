@@ -23,9 +23,9 @@
 - [x] Haskel        --> Day 19
 - [x] Bash          --> Day 20
 - [x] Pony          --> Day 21
-- [ ] C#
+- [x] C#            --> Day 22
+- [x] Julia         --> Day 23
 - [ ] Ada
-- [ ] Julia
 - [ ] Lisp / Clojure
 - [ ] Fortran
 - [ ] PL/SQL
